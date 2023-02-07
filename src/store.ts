@@ -11,6 +11,7 @@ interface Store {
     pickedLang: Languages;
     originalTranslations: contentObj[];
     unsavedChanges:contentObj[];
+    clearUnsaved: ()=> void;
     setOriginalTranslations: (data: contentObj[]) => void;
     setPickedLang: (target: Languages) => void;
     setUnsavedChanges: (target: Languages, content: Record<string,string>) => void;
@@ -35,7 +36,6 @@ export const useAuth = create<Auth>()(
     )
 )
 
-
 export const useStore = create<Store>()(
     persist(
         (set)=> ({
@@ -53,7 +53,10 @@ export const useStore = create<Store>()(
                 set(state => {
                   return { unsavedChanges: [...state.unsavedChanges, { lang_id: target, content: content }] };
                 });
-              }
+            },
+            clearUnsaved: () => {
+                set({unsavedChanges:emptyTranslationBody})
+            }
         }),
         { name: 'translation-store'}
     )

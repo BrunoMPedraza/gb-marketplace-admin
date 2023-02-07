@@ -3,9 +3,20 @@ import { getTranslations } from '../../../services/static.service'
 import { useStore, useAuth, contentObj } from '../../../store'
 
 const useJSON = () => {
-    const { originalTranslations, setOriginalTranslations } = useStore()
+    const { pickedLang, originalTranslations, setOriginalTranslations } = useStore()
     const { token } = useAuth()
     const [loading, setLoading] = useState<boolean>(true)
+    const [content, setContent] = useState<Record<string,string>>()
+
+
+    useEffect(()=>{
+        if ( !loading ){
+            const filteredArray = originalTranslations.filter(element => element.lang_id === pickedLang);
+            const { content:pickedContent } = filteredArray[0]
+            setContent(pickedContent)
+        }
+    },[loading, originalTranslations, pickedLang])
+
     const preload = async() => {
         try {
             const result:any = await getTranslations(token)
@@ -19,7 +30,7 @@ const useJSON = () => {
     useEffect(()=>{
         preload()
     },[])
-    return { originalTranslations, loading }
+    return { content }
 }
 
 export default useJSON

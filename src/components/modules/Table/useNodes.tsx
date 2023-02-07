@@ -2,15 +2,14 @@ import TreeNode from "primereact/treenode";
 import React, { useEffect, useState } from "react";
 import { NodeService } from "../../../services/modules/SearchTab.services";
 import { parseKeys, replaceValue } from "../../../services/shared/utilts.services";
-import { CustomTreeNode, Languages } from "./interfaces";
-import ES from '../../../locales/es/translationES.json'
-import EN from '../../../locales/en/translationEN.json'
-import useJSON from "./useJSON";
 import { useStore } from "../../../store";
+import { CustomTreeNode } from "./interfaces";
+import useJSON from "./useJSON";
 
 const useNodes = ( ) => {
-    const { originalTranslations, loading } = useJSON()
     const { pickedLang } = useStore()
+    const { content } = useJSON()
+    const { unsavedChanges, setUnsavedChanges, clearUnsaved} = useStore()
     const [selectedJSON, setSelectedJSON] = useState<Record<string,string>>()
     const [ nodes, setNodes ] = useState<TreeNode[]>([]);
     const [ selectedNodeKey, setSelectedNodeKey ] = useState<string>();
@@ -25,15 +24,6 @@ const useNodes = ( ) => {
         }
     }
 
-    useEffect(()=>{
-        if ( !loading ){
-            console.info('finished loading')
-            const filteredArray = originalTranslations.filter(element => element.lang_id === pickedLang);
-            const { content } = filteredArray[0]
-            setSelectedJSON(content)
-        }
-
-    },[loading, originalTranslations, setSelectedJSON, pickedLang])
 
     const onUnselect = (event:any) => {
     }
@@ -45,6 +35,18 @@ const useNodes = ( ) => {
         }
     }
 
+    useEffect(()=>{
+        if ( content === selectedJSON){
+            clearUnsaved()
+        }
+        if ( content !== selectedJSON && selectedJSON){
+            setUnsavedChanges(pickedLang,selectedJSON)
+        }
+    },[content, selectedJSON])
+
+    useEffect(()=>{
+        setSelectedJSON(content)
+    },[content])
 
     useEffect(() => {
         if ( selectedJSON ){
