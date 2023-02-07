@@ -1,12 +1,30 @@
 import React from 'react';
 import './App.css';
-import Table from './components/modules/Table';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import Welcome from './pages/Welcome';
+import Editor from './pages/Editor';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Welcome/>
+  },
+  {
+    path: "/app",
+    element: <Editor/>,
+  },
+]);
 
 function App() {
+  if (process.env.NODE_ENV === 'development') {
+    const { worker } = require('./mocks/browser')
+    worker.start()
+  }
   return (
-    <div >
-      <Table/>
-    </div>
+    <RouterProvider router={router} />
   );
 }
 

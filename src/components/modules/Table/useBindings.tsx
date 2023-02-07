@@ -5,7 +5,6 @@ const useBindings = () => {
     const [ focusSearchActive, setFocusSearchActive ] = useState<boolean>(false)
     const handleKeyBindings = (key:KeyboardEvent<HTMLDivElement>) => {
         const { code } = key
-        console.log(code)
         if ( SEARCH.includes(code)){
             searchFn()
         }

@@ -16,3 +16,5 @@ export interface CustomTreeNode extends TreeNode {
     isValue?: boolean;
     key?: string | number;
 }
+
+export type Languages = 'es' | 'en'

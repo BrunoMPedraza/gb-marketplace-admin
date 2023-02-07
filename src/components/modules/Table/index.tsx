@@ -18,6 +18,10 @@ export default function Table() {
         setSelectedNodeKey
     } = useNodes()
 
+    if ( !selectedJSON ){
+        return <>loadingggg</>
+    }
+
     return (
             <TreeTable value={nodes} globalFilter={globalFilter} 
             header={
@@ -29,7 +33,7 @@ export default function Table() {
                 />
             }
             onKeyDown={handleKeyBindings}
-            paginator rows={5} 
+            paginator rows={5}
             selectionMode="single"
             selectionKeys={selectedNodeKey} 
             onSelectionChange={(e) => setSelectedNodeKey(String(e.value))}
