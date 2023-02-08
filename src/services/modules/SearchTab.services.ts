@@ -79,17 +79,20 @@ export function updateNodeInTree(targetNode: CustomTreeNode[], keys: string[], n
     });
   }
 
-function convertNodeToJSObject(nodes: CustomTreeNode[]): object {
+  function convertNodeToJSObject(nodes: CustomTreeNode[], prefix: string = ''): object {
     let obj: any = {};
     nodes.forEach(node => {
-      if (node.isValue && node.key && node.data) {
-        obj[node.key] = node.data.raw;
-      } else if (node.children && node.key) {
-        obj[node.key] = convertNodeToJSObject(node.children);
+      if (node.isValue && node.key && node.data && typeof node.key === 'string') {
+        const key = node.key.replace(prefix, '');
+        obj[key] = node.data.raw;
+      } else if (node.children && node.key && typeof node.key === 'string') {
+        const key = node.key.replace(prefix, '');
+        obj[key] = convertNodeToJSObject(node.children, node.key + '-');
       }
     });
     return obj;
   }
+  
   export const formatForSubmit = (spanishTranslations: CustomTreeNode[], englishTranslation: CustomTreeNode[]):translationsFormat[] => {
     const result:translationsFormat[] = [
         {
