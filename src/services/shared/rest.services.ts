@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { ApiResponse, HttpMethod } from "./rest.interfaces";
-const { REACT_APP_STATIC_BASE_URL } = process.env
-let baseURL = REACT_APP_STATIC_BASE_URL
+const { REACT_APP_API_BASE_URL } = process.env
+let baseURL = REACT_APP_API_BASE_URL
   if (process.env.NODE_ENV === 'development') {
     baseURL = 'https://localhost:3000/'
   }

@@ -11,10 +11,12 @@ interface Store {
     pickedLang: Languages;
     originalTranslations: contentObj[];
     unsavedChanges:contentObj[];
+    isDiff:{ es: boolean, en: boolean };
+    setIsDiff: (es: boolean, en: boolean) => void;
     clearUnsaved: ()=> void;
     setOriginalTranslations: (data: contentObj[]) => void;
     setPickedLang: (target: Languages) => void;
-    setUnsavedChanges: (target: Languages, content: Record<string,string>) => void;
+    setUnsavedChanges: (payload: contentObj[]) => void;
 }
 
 interface Auth {
@@ -42,6 +44,7 @@ export const useStore = create<Store>()(
             pickedLang: 'es',
             originalTranslations: emptyTranslationBody,
             unsavedChanges: emptyTranslationBody,
+            isDiff: {es: false, en: false},
             setPickedLang: (target) =>{
                 set({pickedLang:target})
             },
@@ -49,11 +52,12 @@ export const useStore = create<Store>()(
                 set({ originalTranslations: data
                 });
             },
-            setUnsavedChanges: (target, content) => {
-                set(state => {
-                  return { unsavedChanges: [...state.unsavedChanges, { lang_id: target, content: content }] };
-                });
+            setUnsavedChanges: (payload) => {
+                set({ unsavedChanges: payload  });
             },
+            setIsDiff: (es, en )=>{
+                set({isDiff: {es, en}}
+                )},
             clearUnsaved: () => {
                 set({unsavedChanges:emptyTranslationBody})
             }

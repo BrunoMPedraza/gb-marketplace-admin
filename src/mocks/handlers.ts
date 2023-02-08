@@ -13,7 +13,7 @@ export const handlers = [
             ctx.json(getTranslations),
           )
     }),
-    rest.put(`${baseURL}/translations/put`, (req, res, ctx) => {
+    rest.put(`${baseURL}/translations/update`, (req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.json(putTranslations),

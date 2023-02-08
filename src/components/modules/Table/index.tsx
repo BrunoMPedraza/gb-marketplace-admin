@@ -7,18 +7,22 @@ import { InputTextEditor } from './edit';
 
 import useBindings from './useBindings';
 import useNodes from './useNodes';
+import useJSON from './useJSON';
+import { InputText } from 'primereact/inputtext';
 
 export default function Table() {
     const [ globalFilter, setGlobalFilter ] = useState<string | null | undefined>(null);
     const { handleKeyBindings, focusSearchActive } = useBindings()
+    const { loading } = useJSON()
     const { 
-        nodes, selectedNodeKey, activeNode, 
-        editNode, selectedJSON,
+        nodes, selectedNodeKey, 
+        editNode, 
         onSelect, onUnselect,
-        setSelectedNodeKey
+        setSelectedNodeKey,
+        onSubmit
     } = useNodes()
 
-    if ( !selectedJSON ){
+    if ( loading ){
         return <>loadingggg</>
     }
 
@@ -29,18 +33,20 @@ export default function Table() {
                 globalFilter={globalFilter || ''} 
                 setGlobalFilter={setGlobalFilter}
                 isFocused={focusSearchActive}
-                nodes={selectedJSON}
+                nodes={nodes}
+                onSubmit={onSubmit}
                 />
             }
             onKeyDown={handleKeyBindings}
-            paginator rows={5}
+            paginator rows={8}
             selectionMode="single"
             selectionKeys={selectedNodeKey} 
-            onSelectionChange={(e) => setSelectedNodeKey(String(e.value))}
-            onSelect={(event)=>onSelect(event.node)} 
+            onSelectionChange={({value}) => setSelectedNodeKey(String(value))}
+            onSelect={({node})=>onSelect(node)} 
             onUnselect={onUnselect}
             >
-                <Column field="name" header="Name" 
+                <Column 
+                field="name" header="Name" 
                 editor={
                     (options)=><InputTextEditor options={options} editNode={editNode}/>
                 } 

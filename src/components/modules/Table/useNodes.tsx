@@ -1,69 +1,115 @@
-import TreeNode from "primereact/treenode";
 import React, { useEffect, useState } from "react";
-import { NodeService } from "../../../services/modules/SearchTab.services";
-import { parseKeys, replaceValue } from "../../../services/shared/utilts.services";
+import TreeNode from "primereact/treenode";
+import { formatForSubmit, NodeService, updateNodeInTree } from "../../../services/modules/SearchTab.services";
+import { parseKeys } from "../../../services/shared/utilts.services";
 import { useStore } from "../../../store";
-import { CustomTreeNode } from "./interfaces";
-import useJSON from "./useJSON";
+import { CustomTreeNode, Languages } from "./interfaces";
+import { putTranslations } from "../../../services/static.service";
+import { translationsFormat } from "../../../mocks/interfaces";
 
 const useNodes = ( ) => {
-    const { pickedLang } = useStore()
-    const { content } = useJSON()
-    const { unsavedChanges, setUnsavedChanges, clearUnsaved} = useStore()
-    const [selectedJSON, setSelectedJSON] = useState<Record<string,string>>()
+    const { 
+        pickedLang, 
+        setUnsavedChanges,
+        originalTranslations,
+    } = useStore()
+    // Displayed nodes
     const [ nodes, setNodes ] = useState<TreeNode[]>([]);
     const [ selectedNodeKey, setSelectedNodeKey ] = useState<string>();
-    const [ modifiedNodes, setModifiedNodes ] = useState<TreeNode[]>([])
-    const [ activeNode, setActiveNode ] = useState<CustomTreeNode>()
+    // Temporary nodes (lost on dismount)
+    const [ spanishNodes, setSpanishNodes ] = useState<TreeNode[]>([])
+    const [ englishNodes, setEnglishNodes ] = useState<TreeNode[]>([])
 
     const onSelect = (node:CustomTreeNode) => {
         const { isValue } = node
         setSelectedNodeKey(String(node.key))
-        if ( isValue ){
-            setActiveNode(node as TreeNode)
-        }
     }
-
 
     const onUnselect = (event:any) => {
     }
 
-    const editNode = ( key:string,value?:string,  ) => {
-        if ( value ){
-            const obj = JSON.parse(JSON.stringify(selectedJSON));
-            setSelectedJSON(replaceValue(parseKeys(key),obj,value))
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    // @@This makes the initial load, so that the base languages work as a base value for our Spanish and English nodes
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    const initialParse = ( target: Languages ) => {
+        const targetIndex = target === 'es' ? 0 : 1
+        const stringified = JSON.stringify(originalTranslations[targetIndex].content)
+        const obj = JSON.parse(stringified)
+        NodeService.getTreeTableNodes(obj).then(data => {
+            if ( target === 'es'){
+                setSpanishNodes(data)
+            }
+            if ( target === 'en'){
+                setEnglishNodes(data)
+            }
+        });
+    }
+    useEffect(()=>{
+            initialParse('en')
+            initialParse('es')
+    },[originalTranslations])
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    // @@ ENDof initialLoad
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    // @@ This is where language selection affects node tree
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    const handleNodeSelection = ():TreeNode[] => {
+        if ( pickedLang === 'es'){
+            return spanishNodes
+        }
+        return englishNodes
+    }
+    useEffect(() => {
+        setNodes(handleNodeSelection())
+    }, [pickedLang, spanishNodes, englishNodes]); 
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    // @ENDof language selection
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    // @@Node edition
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    const editNode = (options:any, value:string):void => {
+        const result = updateNodeInTree(handleNodeSelection(), parseKeys(options.node.key),value,value)
+        if ( pickedLang === 'es' ){
+            setSpanishNodes(result)
+        }
+        if (pickedLang === 'en'){
+            setEnglishNodes(result)
         }
     }
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    // @@ENDof Node edition
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
 
-    useEffect(()=>{
-        if ( content === selectedJSON){
-            clearUnsaved()
-        }
-        if ( content !== selectedJSON && selectedJSON){
-            setUnsavedChanges(pickedLang,selectedJSON)
-        }
-    },[content, selectedJSON])
-
-    useEffect(()=>{
-        setSelectedJSON(content)
-    },[content])
-
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    // @@ Visually displayed and editable node based on language
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
     useEffect(() => {
-        if ( selectedJSON ){
-            const obj = JSON.parse(JSON.stringify(selectedJSON));
-            NodeService.getTreeTableNodes(obj).then(data => {
-                setNodes(data)
-                setModifiedNodes(data)
-            });
+        if ( pickedLang === 'es' ){
+            setNodes(spanishNodes)
         }
-    }, [selectedJSON]); 
+        if (pickedLang === 'en'){
+            setNodes(englishNodes)
+        }
+    }, [spanishNodes, englishNodes, pickedLang]); 
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
     
-    
+    // @@ Finish functions (SUBMIT)
+
+
+    const onSubmit = () => {
+        const payload = formatForSubmit(spanishNodes, englishNodes)
+        setUnsavedChanges(payload)
+    }
+
     return { 
-        nodes, selectedNodeKey, activeNode,
-        selectedJSON,
+        nodes, selectedNodeKey,
         onSelect, onUnselect,
-        setSelectedNodeKey, editNode
+        setSelectedNodeKey, editNode,
+        onSubmit,
     }
 }
 export default useNodes

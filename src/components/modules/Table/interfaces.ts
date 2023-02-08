@@ -3,7 +3,8 @@ import { Dispatch, SetStateAction } from "react";
 
 export interface HeaderI {
     isFocused: boolean;
-    nodes?: any;
+    nodes: CustomTreeNode[];
+    onSubmit: ()=>void;
     globalFilter?: string;
     setGlobalFilter: Dispatch<SetStateAction<string | null | undefined>>
 }

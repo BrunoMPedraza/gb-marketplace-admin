@@ -5,7 +5,7 @@ export interface IputTranslations {
     key: string;
 }
 
-export interface IgetTranslations {
+export interface translationsFormat {
     lang_id: Languages;
     content: Record<string,any>;
 }

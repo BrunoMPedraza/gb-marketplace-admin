@@ -1,8 +1,8 @@
-import { IgetTranslations, IputTranslations } from "./interfaces";
+import { translationsFormat, IputTranslations } from "./interfaces";
 import ES from '../locales/es/translationES.json'
 import EN from '../locales/en/translationEN.json'
 
-export const getTranslations:IgetTranslations[] = [
+export const getTranslations:translationsFormat[] = [
     {
         lang_id: 'es',
         content: ES,
