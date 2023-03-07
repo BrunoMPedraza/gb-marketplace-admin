@@ -1,4 +1,10 @@
+import { ReactNode } from "react";
+
 export interface IModal {
-    disabled: boolean;
-    saveChanges: ()=>void;
+    label: string;
+    disabled?: boolean;
+    title: string;
+    content?: ReactNode;
+    onOpen?: ()=>void;
+    confirmFn?: ()=>void;
 }

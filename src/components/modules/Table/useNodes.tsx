@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import TreeNode from "primereact/treenode";
-import { formatForSubmit, NodeService, updateNodeInTree } from "../../../services/modules/SearchTab.services";
+import {formatForSubmit, NodeService, updateNodeInTree, updateTranslation } from "../../../services/modules/SearchTab.services";
 import { parseKeys } from "../../../services/shared/utilts.services";
 import { useStore } from "../../../store";
 import { CustomTreeNode, Languages } from "./interfaces";
-import { putTranslations } from "../../../services/static.service";
-import { translationsFormat } from "../../../mocks/interfaces";
 
 const useNodes = ( ) => {
     const { 
@@ -19,13 +17,17 @@ const useNodes = ( ) => {
     // Temporary nodes (lost on dismount)
     const [ spanishNodes, setSpanishNodes ] = useState<TreeNode[]>([])
     const [ englishNodes, setEnglishNodes ] = useState<TreeNode[]>([])
-
+    useEffect(()=>{
+        console.log(originalTranslations)
+        console.log(originalTranslations[0].content,selectedNodeKey,)
+    },[originalTranslations])
     const onSelect = (node:CustomTreeNode) => {
-        const { isValue } = node
-        setSelectedNodeKey(String(node.key))
+        const { key } = node
+        setSelectedNodeKey(String(key))
     }
 
-    const onUnselect = (event:any) => {
+    const onUnselect = (node:CustomTreeNode) => {
+        setSelectedNodeKey(undefined)
     }
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@
@@ -45,8 +47,8 @@ const useNodes = ( ) => {
         });
     }
     useEffect(()=>{
-            initialParse('en')
-            initialParse('es')
+        initialParse('en')
+        initialParse('es')
     },[originalTranslations])
     // @@@@@@@@@@@@@@@@@@@@@@@@@
     // @@ ENDof initialLoad
@@ -81,6 +83,20 @@ const useNodes = ( ) => {
         }
     }
     // @@@@@@@@@@@@@@@@@@@@@@@@@
+    // @@This allows us to manage new nodes and folders.
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
+    const addNode = (newKey:string, newValue:string) => {
+        const parsedNode = selectedNodeKey ? `${selectedNodeKey}-${newKey}` : newKey
+        console.log(updateTranslation(originalTranslations,parsedNode, newValue, 'es'))
+        // console.log(parsedNode)
+        // if ( pickedLang === 'es' ){
+        //     setSpanishNodes(result)
+        // }
+        // if (pickedLang === 'en'){
+        //     setEnglishNodes(result)
+        // }
+    }
+    // @@@@@@@@@@@@@@@@@@@@@@@@@
     // @@ENDof Node edition
     // @@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -88,6 +104,7 @@ const useNodes = ( ) => {
     // @@ Visually displayed and editable node based on language
     // @@@@@@@@@@@@@@@@@@@@@@@@@
     useEffect(() => {
+        console.log(spanishNodes)
         if ( pickedLang === 'es' ){
             setNodes(spanishNodes)
         }
@@ -96,20 +113,20 @@ const useNodes = ( ) => {
         }
     }, [spanishNodes, englishNodes, pickedLang]); 
     // @@@@@@@@@@@@@@@@@@@@@@@@@
-    
+
     // @@ Finish functions (SUBMIT)
-
-
     const onSubmit = () => {
         const payload = formatForSubmit(spanishNodes, englishNodes)
-        setUnsavedChanges(payload)
+        console.log(payload)
     }
 
     return { 
-        nodes, selectedNodeKey,
-        onSelect, onUnselect,
-        setSelectedNodeKey, editNode,
-        onSubmit,
+        nodes, selectedNodeKey, 
+        addNode,
+        editNode,
+        onSelect,
+        setSelectedNodeKey,
+        onSubmit
     }
 }
 export default useNodes

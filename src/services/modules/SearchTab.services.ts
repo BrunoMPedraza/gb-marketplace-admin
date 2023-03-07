@@ -1,6 +1,7 @@
 import TreeNode from 'primereact/treenode';
-import { CustomTreeNode } from '../../components/modules/Table/interfaces';
+import { CustomTreeNode, Languages } from '../../components/modules/Table/interfaces';
 import { translationsFormat } from '../../mocks/interfaces';
+import { contentObj } from '../../store';
 
 export const NodeService = {
     getTreeTableNodesData(obj:Record<string,string> ) {
@@ -9,6 +10,30 @@ export const NodeService = {
     getTreeTableNodes( obj:Record<string,string> ) {
         return Promise.resolve(this.getTreeTableNodesData(obj));
     },
+};
+
+export const updateTranslation = (content: contentObj[], newKey: string, value: string, targetLang: Languages): contentObj[] => {
+  const updatedContent = content.slice();
+
+  updatedContent.forEach((node) => {
+    if (node.lang_id === targetLang) {
+      let keys = newKey.split("-");
+      let currentObj = node.content;
+
+      for (let i = 0; i < keys.length; i++) {
+        let key = keys[i];
+
+        if (i === keys.length - 1) {
+          currentObj[key] = value;
+        } else {
+          currentObj[key] = currentObj[key] || {};
+          currentObj = currentObj[key];
+        }
+      }
+    }
+  });
+
+  return updatedContent;
 };
 
 function convertToTreeTableNode(obj: Record<string,string> | string, keyPrefix?: string): CustomTreeNode[] {

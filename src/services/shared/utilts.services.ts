@@ -3,23 +3,6 @@ import TreeNode from "primereact/treenode";
 export function parseKeys(keysString:string):string[] {
   return keysString.split("-");
 }
-export const findNodeByKey = (nodes:any, key:any) => {
-  console.log(nodes,key)
-    let path = key.split('-');
-    let node;
-    while (path.length) {
-      console.log(path[0])
-      console.log()
-      const picked = (nodes.filter((a:any)=>a.key===path[0]))
-      if ( !picked.isValue ){
-
-      }
-      console.log(picked)
-      path.shift();
-    }
-    console.log(node)
-    return node;
-}
 
 export function replaceValue(keys: string[], obj: any, newValue: string) {
   let current = obj;
