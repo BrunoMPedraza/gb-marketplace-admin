@@ -12,22 +12,23 @@ export const NodeService = {
     },
 };
 
+
 export const updateTranslation = (content: contentObj[], newKey: string, value: string, targetLang: Languages): contentObj[] => {
   const updatedContent = content.slice();
 
   updatedContent.forEach((node) => {
     if (node.lang_id === targetLang) {
       let keys = newKey.split("-");
-      let currentObj = node.content;
+      let currentObj: Record<string, string> = node.content;
 
       for (let i = 0; i < keys.length; i++) {
         let key = keys[i];
 
         if (i === keys.length - 1) {
-          currentObj[key] = value;
+          currentObj[key]  = value as string;
         } else {
-          currentObj[key] = currentObj[key] || {};
-          currentObj = currentObj[key];
+          currentObj[key] = currentObj[key];
+          currentObj = currentObj[key]as unknown as Record<string, string>;
         }
       }
     }
@@ -35,6 +36,7 @@ export const updateTranslation = (content: contentObj[], newKey: string, value: 
 
   return updatedContent;
 };
+
 
 function convertToTreeTableNode(obj: Record<string,string> | string, keyPrefix?: string): CustomTreeNode[] {
     return Object.entries(obj).map(([key, value]) => {
