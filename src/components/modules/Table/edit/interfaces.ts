@@ -1,4 +1,6 @@
+import { newLangValues } from "../interfaces";
+
 export interface ITableEditorModalContent{
-    addNodeFn: (newKey:string, newValue:string)=>void;
+    addNodeFn: (result: newLangValues, newKey: string)=>void;
     baseNode?: string;
 }

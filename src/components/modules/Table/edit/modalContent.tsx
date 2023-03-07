@@ -4,20 +4,34 @@ import { ITableEditorModalContent } from "./interfaces"
 import { Button } from "primereact/button"
 
 const TableEditorModalContent = ({addNodeFn, baseNode}:ITableEditorModalContent) =>{
-    const [nodeTitle, setNodeTitle ] = useState<string>()
-    const [nodeContent, setNodeContent] = useState<string>()
+    const [newKey, setNewKey ] = useState<string>('')
+    const [esValue, setEsValue] = useState<string>('')
+    const [enValue, setEnValue] = useState<string>('')
+
+    const result = { enValue, esValue }
     return <div>
     Ingresando en: {baseNode}
     <InputText
-    style={{width: '100%'}} type="text" placeholder='Nombre del Nodo' value={nodeTitle}
-    onChange={(e) => setNodeTitle(e?.target.value)} 
+    style={{width: '100%'}} type="text" placeholder='Nombre del Nodo' value={newKey}
+    onChange={(e) => setNewKey(e?.target.value)} 
     />  
+    <div>
+    Textos en español
     <InputText
-    style={{width: '100%'}} type="text" placeholder='Contenido del Nodo' value={nodeContent}
-    onChange={(e) => setNodeContent(e?.target.value)} 
+    style={{width: '100%'}} type="text" placeholder='Contenido del Nodo' value={esValue}
+    onChange={(e) => setEsValue(e?.target.value)} 
     />  
+    </div>
+
+    <div>
+    Textos en inglés
+    <InputText
+    style={{width: '100%'}} type="text" placeholder='Contenido del Nodo EN' value={enValue}
+    onChange={(e) => setEnValue(e?.target.value)} 
+    />  
+    </div>
     <Button  
-    onClick={()=>addNodeFn(String(nodeTitle), String(nodeContent))} 
+    onClick={()=>addNodeFn(result, newKey)} 
     className='p-button-success'
     style={{padding: '1rem 5rem'}}>
         Confirmar

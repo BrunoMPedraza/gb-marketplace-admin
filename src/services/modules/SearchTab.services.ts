@@ -19,16 +19,18 @@ export const updateTranslation = (content: contentObj[], newKey: string, value: 
   updatedContent.forEach((node) => {
     if (node.lang_id === targetLang) {
       let keys = newKey.split("-");
-      let currentObj: Record<string, string> = node.content;
+      let currentObj: Record<string, any> = node.content;
 
       for (let i = 0; i < keys.length; i++) {
         let key = keys[i];
 
         if (i === keys.length - 1) {
-          currentObj[key]  = value as string;
+          currentObj[key] = value;
         } else {
-          currentObj[key] = currentObj[key];
-          currentObj = currentObj[key]as unknown as Record<string, string>;
+          if (!currentObj[key]) {
+            currentObj[key] = {};
+          }
+          currentObj = currentObj[key];
         }
       }
     }

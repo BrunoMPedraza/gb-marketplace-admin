@@ -2,7 +2,7 @@ import TreeNode from "primereact/treenode";
 import { Dispatch, SetStateAction } from "react";
 
 export interface HeaderI {
-    addNode: (newKey:string, newValue:string)=>void;
+    addNode: (result: newLangValues, newKey: string)=>void;
     isFocused: boolean;
     selectedNodeKey: string;
     nodes: CustomTreeNode[];
@@ -29,3 +29,9 @@ export interface CustomTreeNode extends TreeNode {
 }
 
 export type Languages = 'es' | 'en'
+
+
+export type newLangValues = {
+    esValue: string;
+    enValue: string;
+}

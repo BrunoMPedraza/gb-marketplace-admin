@@ -3,13 +3,14 @@ import TreeNode from "primereact/treenode";
 import {formatForSubmit, NodeService, updateNodeInTree, updateTranslation } from "../../../services/modules/SearchTab.services";
 import { parseKeys } from "../../../services/shared/utilts.services";
 import { useStore } from "../../../store";
-import { CustomTreeNode, Languages } from "./interfaces";
+import { CustomTreeNode, Languages, newLangValues } from "./interfaces";
 
 const useNodes = ( ) => {
     const { 
         pickedLang, 
         setUnsavedChanges,
         originalTranslations,
+        setOriginalTranslations
     } = useStore()
     // Displayed nodes
     const [ nodes, setNodes ] = useState<TreeNode[]>([]);
@@ -85,16 +86,18 @@ const useNodes = ( ) => {
     // @@@@@@@@@@@@@@@@@@@@@@@@@
     // @@This allows us to manage new nodes and folders.
     // @@@@@@@@@@@@@@@@@@@@@@@@@
-    const addNode = (newKey:string, newValue:string) => {
+    const addNode = ({ esValue, enValue }: newLangValues,newKey:string, ) => {
         const parsedNode = selectedNodeKey ? `${selectedNodeKey}-${newKey}` : newKey
-        console.log(updateTranslation(originalTranslations,parsedNode, newValue, 'es'))
-        // console.log(parsedNode)
-        // if ( pickedLang === 'es' ){
-        //     setSpanishNodes(result)
-        // }
-        // if (pickedLang === 'en'){
-        //     setEnglishNodes(result)
-        // }
+        const updatedContentEn = updateTranslation(originalTranslations, parsedNode, enValue, 'en');
+        const updatedContentEs = updateTranslation(originalTranslations, parsedNode, esValue, 'es');
+        const result = updatedContentEn.map((node, i) => ({
+            ...node,
+            content: {
+              ...node.content,
+              ...updatedContentEs[i].content
+            }
+          }))
+        setOriginalTranslations(result)
     }
     // @@@@@@@@@@@@@@@@@@@@@@@@@
     // @@ENDof Node edition
